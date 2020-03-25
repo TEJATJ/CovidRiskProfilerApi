@@ -11,7 +11,8 @@
 |
 */
 $router->group(['prefix' => 'api','namespace'=>'User'], function () use ($router) {
-    $router->get('/userId', 'UserController@fetchUser');
+    $router->post('/userId', 'UserController@fetchUser');
+    $router->post('/status', 'UserController@fetchStatus');
 })
 
 ?>
