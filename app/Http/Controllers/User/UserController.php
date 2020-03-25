@@ -25,24 +25,27 @@ class UserController extends Controller{
 
     private function addTracker($deviceId,$userId,$latitude,$longitude)
     {
-        $user=User::where(["DEVICE_ID"=>$deviceId,"USER_ID"=>$userId])->first();
-        if($user!=null)
-        {
+       
             $tracker=new Tracker;
             $tracker->USER_ID=$userId;
             $tracker->LATITUDE=$latitude;
             $tracker->LONGITUDE=$longitude;
             $tracker->save();
-        }
-        return ["Status"=>true];
+       
+            return ["Status"=>true];
     }
     public function fetchStatus(Request $request)
     {
-        $count=Tracker::with('activeUser')
-        ->where('USER_ID','!=',$request->userId)
-        ->where(DB::raw("(3959 * acos(cos(radians(" . $request->latitude . ")) * cos (radians(LATITUDE) )*cos(radians(LONGITUDE)-radians(" . $request->longitude . "))
-        +sin(radians(" . $request->latitude . "))*sin(radians(LATITUDE))))"), "<", env("SAFE_DISTANCE"))->count();
-        $this->addTracker($request->deviceId,$request->userId,$request->latitude,$request->longitude);
-        return ["Status"=>$count];
+        $user=User::where(["DEVICE_ID"=>$request->deviceId,"USER_ID"=>$request->userId])->first();
+        if($user!=null)
+        {
+            $count=Tracker::with('activeUser')
+            ->where('USER_ID','!=',$request->userId)
+            ->where(DB::raw("(3959 * acos(cos(radians(" . $request->latitude . ")) * cos (radians(LATITUDE) )*cos(radians(LONGITUDE)-radians(" . $request->longitude . "))
+            +sin(radians(" . $request->latitude . "))*sin(radians(LATITUDE))))"), "<", env("SAFE_DISTANCE"))->count();
+            $this->addTracker($request->deviceId,$request->userId,$request->latitude,$request->longitude);
+            return ["Status"=>$count];
+        }
+        return ["Status"=>0];
     }
 }
