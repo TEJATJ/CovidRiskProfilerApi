@@ -10,9 +10,9 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
-$router->group(['prefix' => 'api'], function () use ($router) {
-    $router->get('/userId', function () use ($router) {
-        return $router->app->version();
-    });
+$router->group(['prefix' => 'api','namespace'=>'User'], function () use ($router) {
+    $router->get('/userId', 'UserController@fetchUser');
 })
+
+?>
 
